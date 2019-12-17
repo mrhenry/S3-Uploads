@@ -9,7 +9,6 @@ class S3_Uploads {
 	private $secret;
 
 	public $original_upload_dir;
-	public $original_file;
 
 	/**
 	 *
@@ -47,8 +46,7 @@ class S3_Uploads {
 
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_filter( 'wp_image_editors', array( $this, 'filter_editors' ), 9 );
-		add_action( 'delete_attachment', array( $this, 'set_original_file' ) );
-		add_filter( 'wp_delete_file', array( $this, 'wp_filter_delete_file' ) );
+		add_action( 'delete_attachment', array( $this, 'delete_attachment_files' ) );
 		remove_filter( 'admin_notices', 'wpthumb_errors' );
 
 		add_action( 'wp_handle_sideload_prefilter', array( $this, 'filter_sideload_move_temp_file_to_s3' ) );
@@ -63,7 +61,6 @@ class S3_Uploads {
 		remove_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		remove_filter( 'wp_image_editors', array( $this, 'filter_editors' ), 9 );
 		remove_filter( 'wp_handle_sideload_prefilter', array( $this, 'filter_sideload_move_temp_file_to_s3' ) );
-		remove_filter( 'wp_delete_file', array( $this, 'wp_filter_delete_file' ) );
 	}
 
 	/**
@@ -103,35 +100,36 @@ class S3_Uploads {
 	}
 
 	/**
-	 * Capture the full path to the original file being deleted. This
-	 * is used when determining whether an absolute or relative path
-	 * should be used when deleting the file.
+	 * Delete all attachment files from S3 when an attachment is deleted.
+	 *
+	 * WordPress Core's handling of deleting files for attachments via
+	 * wp_delete_attachment_files is not compatible with remote streams, as
+	 * it makes many assumptions about local file paths. The hooks also do
+	 * not exist to be able to modify their behavior. As such, we just clean
+	 * up the s3 files when an attachment is removed, and leave WordPress to try
+	 * a failed attempt at mangling the s3:// urls.
 	 *
 	 * @param $post_id
 	 */
-	public function set_original_file( $post_id ) {
-		$this->original_file = get_attached_file( $post_id );
-	}
+	public function delete_attachment_files( $post_id ) {
+		$meta = wp_get_attachment_metadata( $post_id );
+		$file = get_attached_file( $post_id );
 
-	/**
-	 * When WordPress removes files, it's expecting to do so on
-	 * absolute file paths, as such it breaks when using uris for
-	 * file paths (such as s3://...). We have to filter the file_path
-	 * to only return the relative section, to play nice with WordPress
-	 * handling.
-	 *
-	 * @param  string $file_path
-	 * @return string
-	 */
-	public function wp_filter_delete_file( $file_path ) {
-		$dir = wp_upload_dir();
+		$deleted = array();
 
-		// When `wp_delete_file()` is called directly, it expects an absolute path.
-		if ( ! $this->original_file || $file_path === $this->original_file ) {
-			return $file_path;
+		if ( ! empty( $meta['sizes'] ) ) {
+			foreach ( $meta['sizes'] as $sizeinfo ) {
+				$intermediate_file = str_replace( basename( $file ), $sizeinfo['file'], $file );
+				if ( $deleted[$intermediate_file] ?? false ) {
+					continue;
+				}
+
+				$deleted[$intermediate_file] = true;
+
+				unlink( $intermediate_file );
+			}
 		}
-
-		return str_replace( trailingslashit( $dir['basedir'] ), '', $file_path );
+		unlink( $file );
 	}
 
 	public function get_s3_url() {
