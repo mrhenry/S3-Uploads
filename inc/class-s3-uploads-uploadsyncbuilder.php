@@ -19,12 +19,14 @@ class S3_Uploads_UploadSyncBuilder extends Aws\S3\Sync\UploadSyncBuilder {
 		// Only wrap the source iterator in a changed files iterator if we are not forcing the transfers
 		if ( ! $this->forcing ) {
 			$this->sourceIterator->rewind();
+
 			$this->sourceIterator = new S3_Uploads_ChangedFilesIterator(
 				new \NoRewindIterator( $this->sourceIterator ),
 				$this->getTargetIterator(),
 				$this->sourceConverter,
 				$this->targetConverter
 			);
+
 			$this->sourceIterator->dry_run = $this->dry_run;
 			$this->sourceIterator->rewind();
 		}

@@ -26,7 +26,7 @@ class S3_Uploads_Stream_Wrapper extends Aws\S3\StreamWrapper {
 	// Override
 	public function stream_flush() {
 
-		/// Expires:
+		// Expires:
 		if ( defined( 'S3_UPLOADS_HTTP_EXPIRES' ) ) {
 			$this->params['Expires'] = S3_UPLOADS_HTTP_EXPIRES;
 		}
@@ -84,7 +84,7 @@ class S3_Uploads_Stream_Wrapper extends Aws\S3\StreamWrapper {
 		 * As a work around, we attempt to write an empty object.
 		 */
 		try {
-			$p = $this->params;
+			$p         = $this->params;
 			$p['Body'] = '';
 			static::$client->putObject( $p );
 		} catch ( \Exception $e ) {
@@ -117,38 +117,38 @@ class S3_Uploads_Stream_Wrapper extends Aws\S3\StreamWrapper {
 		 */
 		if ( ! $extension ) {
 
-			return array (
-				0 => 0,
-				'dev' => 0,
-				1 => 0,
-				'ino' => 0,
-				2 => 16895,
-				'mode' => 16895,
-				3 => 0,
-				'nlink' => 0,
-				4 => 0,
-				'uid' => 0,
-				5 => 0,
-				'gid' => 0,
-				6 => -1,
-				'rdev' => -1,
-				7 => 0,
-				'size' => 0,
-				8 => 0,
-				'atime' => 0,
-				9 => 0,
-				'mtime' => 0,
-				10 => 0,
-				'ctime' => 0,
-				11 => -1,
+			return array(
+				0         => 0,
+				'dev'     => 0,
+				1         => 0,
+				'ino'     => 0,
+				2         => 16895,
+				'mode'    => 16895,
+				3         => 0,
+				'nlink'   => 0,
+				4         => 0,
+				'uid'     => 0,
+				5         => 0,
+				'gid'     => 0,
+				6         => -1,
+				'rdev'    => -1,
+				7         => 0,
+				'size'    => 0,
+				8         => 0,
+				'atime'   => 0,
+				9         => 0,
+				'mtime'   => 0,
+				10        => 0,
+				'ctime'   => 0,
+				11        => -1,
 				'blksize' => -1,
-				12 => -1,
-				'blocks' => -1,
+				12        => -1,
+				'blocks'  => -1,
 			);
 		}
 
 		// Check if this path is in the url_stat cache
-		if ( isset ( self::$nextStat[ $path ] ) ) {
+		if ( isset( self::$nextStat[ $path ] ) ) {
 			return self::$nextStat[ $path ];
 		}
 

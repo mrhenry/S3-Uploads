@@ -77,7 +77,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 
 	static function getMimeType( $uri, $mapping = null ) {
 
-		$extension = '';
+		$extension  = '';
 		$file_parts = explode( '.', basename( $uri ) );
 
 		// Remove the first part: a full filename should not match an extension.
@@ -85,9 +85,9 @@ class S3_Uploads_Local_Stream_Wrapper {
 
 		// Iterate over the file parts, trying to find a match.
 		// For my.awesome.image.jpeg, we try:
-		//   - jpeg
-		//   - image.jpeg, and
-		//   - awesome.image.jpeg
+		// - jpeg
+		// - image.jpeg, and
+		// - awesome.image.jpeg
 		while ( $additional_part = array_pop( $file_parts ) ) {
 			$extension = strtolower( $additional_part . ( $extension ? '.' . $extension : '' ) );
 			if ( isset( $mapping['extensions'][ $extension ] ) ) {
@@ -127,7 +127,8 @@ class S3_Uploads_Local_Stream_Wrapper {
 		if ( ! isset( $uri ) ) {
 			$uri = $this->uri;
 		}
-		$path = $this->getDirectoryPath() . '/' . $this->getTarget( $uri );
+
+		$path     = $this->getDirectoryPath() . '/' . $this->getTarget( $uri );
 		$realpath = $path;
 
 		$directory = realpath( $this->getDirectoryPath() );
@@ -143,9 +144,9 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 *
 	 * @param string $uri
 	 *   A string containing the URI to the file to open.
-	 * @param int $mode
+	 * @param int    $mode
 	 *   The file mode ("r", "wb" etc.).
-	 * @param int $options
+	 * @param int    $options
 	 *   A bit mask of STREAM_USE_PATH and STREAM_REPORT_ERRORS.
 	 * @param string $opened_path
 	 *   A string containing the path actually opened.
@@ -156,8 +157,8 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 * @see http://php.net/manual/streamwrapper.stream-open.php
 	 */
 	public function stream_open( $uri, $mode, $options, &$opened_path ) {
-		$this->uri = $uri;
-		$path = $this->getLocalPath();
+		$this->uri    = $uri;
+		$path         = $this->getLocalPath();
 		$this->handle = ( $options & STREAM_REPORT_ERRORS ) ? fopen( $path, $mode ) : @fopen( $path, $mode );
 
 		if ( (bool) $this->handle && $options & STREAM_USE_PATH ) {
@@ -355,9 +356,9 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 *
 	 * @param string $uri
 	 *   A string containing the URI to the directory to create.
-	 * @param int $mode
+	 * @param int    $mode
 	 *   Permission flags - see mkdir().
-	 * @param int $options
+	 * @param int    $options
 	 *   A bit mask of STREAM_REPORT_ERRORS and STREAM_MKDIR_RECURSIVE.
 	 *
 	 * @return bool
@@ -367,7 +368,8 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 */
 	public function mkdir( $uri, $mode, $options ) {
 		$this->uri = $uri;
-		$recursive = (bool) ($options & STREAM_MKDIR_RECURSIVE);
+		$recursive = (bool) ( $options & STREAM_MKDIR_RECURSIVE );
+
 		if ( $recursive ) {
 			// $this->getLocalPath() fails if $uri has multiple levels of directories
 			// that do not yet exist.
@@ -375,6 +377,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 		} else {
 			$localpath = $this->getLocalPath( $uri );
 		}
+
 		if ( $options & STREAM_REPORT_ERRORS ) {
 			return mkdir( $localpath, $mode, $recursive );
 		} else {
@@ -387,7 +390,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 *
 	 * @param string $uri
 	 *   A string containing the URI to the directory to delete.
-	 * @param int $options
+	 * @param int    $options
 	 *   A bit mask of STREAM_REPORT_ERRORS.
 	 *
 	 * @return bool
@@ -397,6 +400,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 */
 	public function rmdir( $uri, $options ) {
 		$this->uri = $uri;
+
 		if ( $options & STREAM_REPORT_ERRORS ) {
 			return rmdir( $this->getLocalPath() );
 		} else {
@@ -409,7 +413,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 *
 	 * @param string $uri
 	 *   A string containing the URI to get information about.
-	 * @param int $flags
+	 * @param int    $flags
 	 *   A bit mask of STREAM_URL_STAT_LINK and STREAM_URL_STAT_QUIET.
 	 *
 	 * @return array
@@ -420,7 +424,8 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 */
 	public function url_stat( $uri, $flags ) {
 		$this->uri = $uri;
-		$path = $this->getLocalPath();
+		$path      = $this->getLocalPath();
+
 		// Suppress warnings if requested or if the file or directory does not
 		// exist. This is consistent with PHP's plain filesystem stream wrapper.
 		if ( $flags & STREAM_URL_STAT_QUIET || ! file_exists( $path ) ) {
@@ -435,7 +440,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 *
 	 * @param string $uri
 	 *   A string containing the URI to the directory to open.
-	 * @param int $options
+	 * @param int    $options
 	 *   Unknown (parameter is not documented in PHP Manual).
 	 *
 	 * @return bool
@@ -444,7 +449,7 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 * @see http://php.net/manual/streamwrapper.dir-opendir.php
 	 */
 	public function dir_opendir( $uri, $options ) {
-		$this->uri = $uri;
+		$this->uri    = $uri;
 		$this->handle = opendir( $this->getLocalPath() );
 
 		return (bool) $this->handle;

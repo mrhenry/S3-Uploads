@@ -59,11 +59,13 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 	 */
 	public function migrate_attachments_to_s3( $args, $args_assoc ) {
 
-		$attachments = new WP_Query( array(
-			'post_type'      => 'attachment',
-			'posts_per_page' => -1,
-			'post_status'    => 'all',
-		));
+		$attachments = new WP_Query(
+			array(
+				'post_type'      => 'attachment',
+				'posts_per_page' => -1,
+				'post_status'    => 'all',
+			)
+		);
 
 		WP_CLI::line( sprintf( 'Attempting to move %d attachments to S3', $attachments->found_posts ) );
 
@@ -83,7 +85,7 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		$old_upload_dir = $instance->get_original_upload_dir();
-		$upload_dir = wp_upload_dir();
+		$upload_dir     = wp_upload_dir();
 
 		WP_CLI::Line( sprintf( 'wp search-replace "%s" "%s"', $old_upload_dir['baseurl'], $upload_dir['baseurl'] ) );
 	}
@@ -103,7 +105,7 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		$old_upload_dir = $instance->get_original_upload_dir();
-		$upload_dir = wp_upload_dir();
+		$upload_dir     = wp_upload_dir();
 
 		$files = array( get_post_meta( $args[0], '_wp_attached_file', true ) );
 
@@ -121,9 +123,11 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 				if ( ! copy( $path, $upload_dir['basedir'] . '/' . $file ) ) {
 					WP_CLI::line( sprintf( 'Failed to moved %s to S3', $file ) );
 				} else {
+
 					if ( ! empty( $args_assoc['delete-local'] ) ) {
 						unlink( $path );
 					}
+
 					WP_CLI::success( sprintf( 'Moved file %s to S3', $file ) );
 
 				}
@@ -142,9 +146,13 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 	 */
 	public function create_iam_user( $args, $args_assoc ) {
 
-		$args_assoc = wp_parse_args( $args_assoc, array(
-			'format' => 'table',
-		) );
+		$args_assoc = wp_parse_args(
+			$args_assoc,
+			array(
+				'format' => 'table',
+			)
+		);
+
 		if ( empty( $args_assoc['username'] ) ) {
 			$username = 's3-uploads-' . sanitize_title( home_url() );
 		} else {
@@ -152,23 +160,34 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		try {
-			$iam = Aws\Common\Aws::factory( array( 'key' => $args_assoc['admin-key'], 'secret' => $args_assoc['admin-secret'] ) )->get( 'iam' );
+			$iam = Aws\Common\Aws::factory(
+				array(
+					'key'    => $args_assoc['admin-key'],
+					'secret' => $args_assoc['admin-secret'],
+				)
+			)->get( 'iam' );
 
-			$iam->createUser( array(
-				'UserName' => $username,
-			));
+			$iam->createUser(
+				array(
+					'UserName' => $username,
+				)
+			);
 
-			$credentials = $iam->createAccessKey( array(
-				'UserName' => $username,
-			));
+			$credentials = $iam->createAccessKey(
+				array(
+					'UserName' => $username,
+				)
+			);
 
 			$credentials = $credentials['AccessKey'];
 
-			$iam->putUserPolicy( array(
-				'UserName'       => $username,
-				'PolicyName'     => $username . '-policy',
-				'PolicyDocument' => $this->get_iam_policy(),
-			));
+			$iam->putUserPolicy(
+				array(
+					'UserName'       => $username,
+					'PolicyName'     => $username . '-policy',
+					'PolicyDocument' => $this->get_iam_policy(),
+				)
+			);
 
 		} catch ( Exception $e ) {
 			WP_CLI::error( $e->getMessage() );
@@ -258,10 +277,13 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		try {
-			$objects = $s3->getIterator('ListObjects', array(
-				'Bucket' => strtok( S3_UPLOADS_BUCKET, '/' ),
-				'Prefix' => $prefix,
-			));
+			$objects = $s3->getIterator(
+				'ListObjects',
+				array(
+					'Bucket' => strtok( S3_UPLOADS_BUCKET, '/' ),
+					'Prefix' => $prefix,
+				)
+			);
 			foreach ( $objects as $object ) {
 				WP_CLI::line( str_replace( $prefix, '', $object['Key'] ) );
 			}
@@ -279,7 +301,7 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 	public function cp( $args ) {
 
 		$from = $args[0];
-		$to = $args[1];
+		$to   = $args[1];
 
 		if ( is_dir( $from ) ) {
 			$this->recurse_copy( $from, $to );
@@ -299,12 +321,13 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 	public function upload_directory( $args, $args_assoc ) {
 
 		$from = $args[0];
-		$to = '';
+		$to   = '';
+
 		if ( isset( $args[1] ) ) {
 			$to = $args[1];
 		}
 
-		$s3 = S3_Uploads::get_instance()->s3();
+		$s3     = S3_Uploads::get_instance()->s3();
 		$bucket = strtok( S3_UPLOADS_BUCKET, '/' );
 		$prefix = '';
 
@@ -340,7 +363,7 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		$s3 = S3_Uploads::get_instance()->s3();
 
 		$prefix = '';
-		$regex = isset( $args_assoc['regex'] ) ? $args_assoc['regex'] : '';
+		$regex  = isset( $args_assoc['regex'] ) ? $args_assoc['regex'] : '';
 
 		if ( strpos( S3_UPLOADS_BUCKET, '/' ) ) {
 			$prefix = trailingslashit( str_replace( strtok( S3_UPLOADS_BUCKET, '/' ) . '/', '', S3_UPLOADS_BUCKET ) );
@@ -398,10 +421,10 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		while ( false !== ( $file = readdir( $dir ) ) ) {
 			if ( ( '.' !== $file ) && ( '..' !== $file ) ) {
 				if ( is_dir( $src . '/' . $file ) ) {
-					$this->recurse_copy( $src . '/' . $file,$dst . '/' . $file );
+					$this->recurse_copy( $src . '/' . $file, $dst . '/' . $file );
 				} else {
 					WP_CLI::line( sprintf( 'Copying from %s to %s', $src . '/' . $file, $dst . '/' . $file ) );
-					copy( $src . '/' . $file,$dst . '/' . $file );
+					copy( $src . '/' . $file, $dst . '/' . $file );
 				}
 			}
 		}
@@ -414,9 +437,9 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 	 * @return bool true if all constants are set, else false.
 	 */
 	private function verify_s3_access_constants() {
-		$required_constants = [
+		$required_constants = array(
 			'S3_UPLOADS_BUCKET',
-		];
+		);
 
 		// Credentials do not need to be set when using AWS Instance Profiles.
 		if ( ! defined( 'S3_UPLOADS_USE_INSTANCE_PROFILE' ) || ! S3_UPLOADS_USE_INSTANCE_PROFILE ) {
@@ -424,6 +447,7 @@ class S3_Uploads_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		$all_set = true;
+
 		foreach ( $required_constants as $constant ) {
 			if ( ! defined( $constant ) ) {
 				WP_CLI::error( sprintf( 'The required constant %s is not defined.', $constant ), false );

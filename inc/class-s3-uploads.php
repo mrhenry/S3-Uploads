@@ -30,12 +30,11 @@ class S3_Uploads {
 	}
 
 	public function __construct( $bucket, $key, $secret, $bucket_url = null, $region = null ) {
-
-		$this->bucket = $bucket;
-		$this->key = $key;
-		$this->secret = $secret;
+		$this->bucket     = $bucket;
+		$this->key        = $key;
+		$this->secret     = $secret;
 		$this->bucket_url = $bucket_url;
-		$this->region = $region;
+		$this->region     = $region;
 	}
 
 	/**
@@ -58,6 +57,7 @@ class S3_Uploads {
 	public function tear_down() {
 
 		stream_wrapper_unregister( 's3' );
+
 		remove_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		remove_filter( 'wp_image_editors', array( $this, 'filter_editors' ), 9 );
 		remove_filter( 'wp_handle_sideload_prefilter', array( $this, 'filter_sideload_move_temp_file_to_s3' ) );
@@ -120,11 +120,13 @@ class S3_Uploads {
 		if ( ! empty( $meta['sizes'] ) ) {
 			foreach ( $meta['sizes'] as $sizeinfo ) {
 				$intermediate_file = str_replace( basename( $file ), $sizeinfo['file'], $file );
-				if ( $deleted[$intermediate_file] ?? false ) {
+
+				// Prevent duplicate deletes caused by sizes hacks
+				if ( $deleted[ $intermediate_file ] ?? false ) {
 					continue;
 				}
 
-				$deleted[$intermediate_file] = true;
+				$deleted[ $intermediate_file ] = true;
 
 				unlink( $intermediate_file );
 			}
@@ -164,17 +166,17 @@ class S3_Uploads {
 		$params = array();
 
 		if ( $this->key && $this->secret ) {
-			$params['key'] = $this->key;
+			$params['key']    = $this->key;
 			$params['secret'] = $this->secret;
 		}
 
 		if ( $this->region ) {
 			$params['signature'] = 'v4';
-			$params['region'] = $this->region;
+			$params['region']    = $this->region;
 		}
 
 		if ( defined( 'WP_PROXY_HOST' ) && defined( 'WP_PROXY_PORT' ) ) {
-			$proxy_auth = '';
+			$proxy_auth    = '';
 			$proxy_address = WP_PROXY_HOST . ':' . WP_PROXY_PORT;
 
 			if ( defined( 'WP_PROXY_USERNAME' ) && defined( 'WP_PROXY_PASSWORD' ) ) {
@@ -212,7 +214,7 @@ class S3_Uploads {
 	 */
 	public function filter_sideload_move_temp_file_to_s3( array $file ) {
 		$upload_dir = wp_upload_dir();
-		$new_path = $upload_dir['basedir'] . '/tmp/' . basename( $file['tmp_name'] );
+		$new_path   = $upload_dir['basedir'] . '/tmp/' . basename( $file['tmp_name'] );
 
 		copy( $file['tmp_name'], $new_path );
 		unlink( $file['tmp_name'] );

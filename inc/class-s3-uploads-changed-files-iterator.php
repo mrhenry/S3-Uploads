@@ -3,6 +3,7 @@
 class S3_Uploads_ChangedFilesIterator extends Aws\S3\Sync\ChangedFilesIterator {
 
 	public $dry_run = false;
+
 	public function accept() {
 
 		$current = $this->current();
