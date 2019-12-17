@@ -3,6 +3,7 @@
 class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 
 	protected $temp_file_to_cleanup = null;
+
 	/**
 	 * Hold on to a reference of all temp local files.
 	 *
@@ -21,20 +22,27 @@ class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 		if ( $this->image instanceof Imagick ) {
 			return true;
 		}
+
 		if ( ! is_file( $this->file ) && ! preg_match( '|^https?://|', $this->file ) ) {
 			return new WP_Error( 'error_loading_image', __( 'File doesn&#8217;t exist?' ), $this->file );
 		}
+
 		$upload_dir = wp_upload_dir();
+
 		if ( strpos( $this->file, $upload_dir['basedir'] ) !== 0 ) {
 			return parent::load();
 		}
+
 		$temp_filename                 = tempnam( get_temp_dir(), 's3-uploads' );
 		$this->temp_files_to_cleanup[] = $temp_filename;
+
 		copy( $this->file, $temp_filename );
 		$this->remote_filename = $this->file;
 		$this->file            = $temp_filename;
-		$result                = parent::load();
-		$this->file            = $this->remote_filename;
+
+		$result = parent::load();
+
+		$this->file = $this->remote_filename;
 		return $result;
 	}
 
