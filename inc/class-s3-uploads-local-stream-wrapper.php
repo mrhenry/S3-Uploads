@@ -169,6 +169,18 @@ class S3_Uploads_Local_Stream_Wrapper {
 	}
 
 	/**
+	 * Support for chmod(), chown(), etc.
+	 *
+	 * @return bool
+	 *   Returns TRUE on success or FALSE on failure.
+	 *
+	 * @see http://php.net/manual/streamwrapper.stream-metadata.php
+	 */
+	public function stream_metadata() {
+		return true;
+	}
+
+	/**
 	 * Support for flock().
 	 *
 	 * @param int $operation
@@ -262,7 +274,21 @@ class S3_Uploads_Local_Stream_Wrapper {
 	 * @see http://php.net/manual/streamwrapper.stream-flush.php
 	 */
 	public function stream_flush() {
-		return fflush( $this->handle );
+		$result = fflush( $this->handle );
+
+		$params = array(
+			'Bucket' => S3_UPLOADS_BUCKET,
+			'Key'    => trim( str_replace( S3_UPLOADS_BUCKET, '', $this->getTarget() ), '/' ),
+		);
+
+		/**
+		 * Action when a new object has been uploaded to s3.
+		 *
+		 * @param array  $params S3Client::putObject parameters.
+		 */
+		do_action( 's3_uploads_putObject', $params );
+
+		return $result;
 	}
 
 	/**
