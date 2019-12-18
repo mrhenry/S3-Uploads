@@ -121,21 +121,34 @@ class S3_Uploads {
 			foreach ( $meta['sizes'] as $sizeinfo ) {
 				$intermediate_file = str_replace( basename( $file ), $sizeinfo['file'], $file );
 
+				$intermediate_file = \apply_filters( 's3_delete_attachment_file', $intermediate_file );
+				if ( empty( $intermediate_file ) ) {
+					continue;
+				}
+
 				// Prevent duplicate deletes caused by sizes hacks
 				if ( $deleted[ $intermediate_file ] ?? false ) {
 					continue;
 				}
 
-				$deleted[ $intermediate_file ] = true;
-
 				unlink( $intermediate_file );
+				$deleted[ $intermediate_file ] = true;
 			}
+		}
+
+		$file = \apply_filters( 's3_delete_attachment_file', $file );
+		if ( empty( $file ) ) {
+			continue;
 		}
 
 		if ( $deleted[ $file ] ?? false ) {
 			return;
 		}
 
+		unlink( $file );
+		$deleted[ $file ] = true;
+
+		// Prevent duplicate deletes caused by wp delete actions
 		\add_filter(
 			'wp_delete_file',
 			function( $file_wp_wants_to_delete ) use ( $deleted ) {
@@ -149,8 +162,6 @@ class S3_Uploads {
 			10,
 			1
 		);
-
-		unlink( $file );
 	}
 
 	public function get_s3_url() {
