@@ -1,3 +1,11 @@
+Fork from : [humanmade/S3-Uploads](https://github.com/humanmade/S3-Uploads)
+
+- Version 2.x dropped support for GCS Buckets
+- Forked from version 1.10
+- Patches from later version back ported
+
+--------------------------------
+
 <table width="100%">
 	<tr>
 		<td align="left" width="70">

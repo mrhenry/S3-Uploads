@@ -1,0 +1,6 @@
+# exclude .gitignore and similar from the generated tarball
+.git*           export-ignore
+.github*        export-ignore
+.tests*         export-ignore
+.composer.lock  export-ignore
+.vendor*        export-ignore
