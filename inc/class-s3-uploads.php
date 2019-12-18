@@ -138,7 +138,7 @@ class S3_Uploads {
 
 		$file = \apply_filters( 's3_delete_attachment_file', $file );
 		if ( empty( $file ) ) {
-			continue;
+			return;
 		}
 
 		if ( $deleted[ $file ] ?? false ) {
