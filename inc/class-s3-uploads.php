@@ -126,19 +126,6 @@ class S3_Uploads {
 					continue;
 				}
 
-				\add_filter(
-					'wp_delete_file',
-					function( $file_wp_wants_to_delete ) use ( $intermediate_file ) {
-						if ( $file_wp_wants_to_delete === $intermediate_file ) {
-							return false;
-						}
-
-						return $file_wp_wants_to_delete;
-					},
-					10,
-					1
-				);
-
 				$deleted[ $intermediate_file ] = true;
 
 				unlink( $intermediate_file );
@@ -151,8 +138,9 @@ class S3_Uploads {
 
 		\add_filter(
 			'wp_delete_file',
-			function( $file_wp_wants_to_delete ) use ( $file ) {
-				if ( $file_wp_wants_to_delete === $file ) {
+			function( $file_wp_wants_to_delete ) use ( $deleted ) {
+				// File already deleted, prevent duplicate 'unlink' calls
+				if ( $deleted[ $file_wp_wants_to_delete ] ?? false ) {
 					return false;
 				}
 
