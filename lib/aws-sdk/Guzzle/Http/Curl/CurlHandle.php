@@ -233,6 +233,8 @@ class CurlHandle
      */
     public function __construct($handle, $options)
     {
+        $this->handle = false;
+
         if ($handle === false) {
             throw new InvalidArgumentException('Invalid handle provided');
         }
@@ -259,11 +261,11 @@ class CurlHandle
      */
     public function close()
     {
-        if ($this->handle !== false) {
+        if (!!($this->handle)) {
             curl_close($this->handle);
             unset($this->handle);
         }
-        $this->handle = null;
+        $this->handle = false;
     }
 
     /**
@@ -273,7 +275,7 @@ class CurlHandle
      */
     public function isAvailable()
     {
-        return $this->handle !== false;
+        return !!($this->handle);
     }
 
     /**
@@ -323,7 +325,7 @@ class CurlHandle
      */
     public function getInfo($option = null)
     {
-        if ($this->handle === false) {
+        if (!($this->handle)) {
             return null;
         }
 

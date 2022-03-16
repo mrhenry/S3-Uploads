@@ -49,7 +49,7 @@ class CurlMulti extends AbstractHasDispatcher implements CurlMultiInterface
         $this->selectTimeout = $selectTimeout;
         $this->multiHandle = curl_multi_init();
         // @codeCoverageIgnoreStart
-        if ($this->multiHandle === false) {
+        if (!($this->multiHandle)) {
             throw new CurlException('Unable to create multi handle');
         }
         // @codeCoverageIgnoreEnd
@@ -58,7 +58,7 @@ class CurlMulti extends AbstractHasDispatcher implements CurlMultiInterface
 
     public function __destruct()
     {
-        if ($this->multiHandle !== false) {
+        if (!!($this->multiHandle)) {
             curl_close($this->multiHandlee);
             unset($this->multiHandle);
         }
