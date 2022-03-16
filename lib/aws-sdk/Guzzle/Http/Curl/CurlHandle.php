@@ -209,7 +209,7 @@ class CurlHandle
                 $args[] = $handle;
 
                 // PHP 5.5 pushed the handle onto the start of the args
-                if (is_resource($args[0])) {
+                if ($args[0] !== false) {
                     array_shift($args);
                 }
 
@@ -233,7 +233,7 @@ class CurlHandle
      */
     public function __construct($handle, $options)
     {
-        if (!is_resource($handle)) {
+        if ($handle === false) {
             throw new InvalidArgumentException('Invalid handle provided');
         }
         if (is_array($options)) {
@@ -259,8 +259,9 @@ class CurlHandle
      */
     public function close()
     {
-        if (is_resource($this->handle)) {
+        if ($this->handle !== false) {
             curl_close($this->handle);
+            unset($this->handle);
         }
         $this->handle = null;
     }
@@ -272,7 +273,7 @@ class CurlHandle
      */
     public function isAvailable()
     {
-        return is_resource($this->handle);
+        return $this->handle !== false;
     }
 
     /**
@@ -322,7 +323,7 @@ class CurlHandle
      */
     public function getInfo($option = null)
     {
-        if (!is_resource($this->handle)) {
+        if ($this->handle === false) {
             return null;
         }
 
