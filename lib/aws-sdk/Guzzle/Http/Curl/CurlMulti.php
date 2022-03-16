@@ -59,7 +59,7 @@ class CurlMulti extends AbstractHasDispatcher implements CurlMultiInterface
     public function __destruct()
     {
         if (!!($this->multiHandle)) {
-            curl_close($this->multiHandlee);
+            curl_multi_close($this->multiHandle);
             unset($this->multiHandle);
         }
     }
