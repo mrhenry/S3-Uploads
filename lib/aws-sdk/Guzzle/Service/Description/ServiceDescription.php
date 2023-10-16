@@ -71,6 +71,17 @@ class ServiceDescription implements ServiceDescriptionInterface, ToArrayInterfac
         $this->fromArray(json_decode($json, true));
     }
 
+    public function __unserialize($data)
+    {
+        $this->operations = array();
+        $this->fromArray($data);
+    }
+
+    public function __serialize(): array
+    {
+        return $this->toArray();
+    }
+
     public function toArray()
     {
         $result = array(

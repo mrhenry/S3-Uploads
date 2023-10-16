@@ -196,6 +196,24 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         $this->ttd    = $data[Options::TOKEN_TTD];
     }
 
+    public function __unserialize($data)
+    {
+        $this->key    = $data[Options::KEY];
+        $this->secret = $data[Options::SECRET];
+        $this->token  = $data[Options::TOKEN];
+        $this->ttd    = $data[Options::TOKEN_TTD];
+    }
+
+    public function __serialize(): array
+    {
+        return array(
+            Options::KEY       => $this->key,
+            Options::SECRET    => $this->secret,
+            Options::TOKEN     => $this->token,
+            Options::TOKEN_TTD => $this->ttd
+        );
+    }
+
     public function getAccessKeyId()
     {
         return $this->key;

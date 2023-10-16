@@ -142,12 +142,12 @@ class CompositeFactory implements \IteratorAggregate, \Countable, FactoryInterfa
         }
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->factories);
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->factories);
     }

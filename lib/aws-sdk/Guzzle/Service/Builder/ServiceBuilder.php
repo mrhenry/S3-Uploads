@@ -70,9 +70,19 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
         $this->builderConfig = json_decode($serialized, true);
     }
 
+    public function __unserialize($data)
+    {
+        $this->builderConfig = $data;
+    }
+
     public function serialize()
     {
         return json_encode($this->builderConfig);
+    }
+
+    public function __serialize(): array
+    {
+        return $this->builderConfig;
     }
 
     /**
@@ -166,23 +176,23 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
         return $this;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->set($offset, $value);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->builderConfig[$offset]);
         unset($this->clients[$offset]);
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->builderConfig[$offset]) || isset($this->clients[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->get($offset);
     }
