@@ -175,6 +175,20 @@ class Response extends AbstractMessage implements \Serializable
         $this->__construct($data['status'], $data['headers'], $data['body']);
     }
 
+    public function __serialize(): array
+    {
+        return array(
+            'status'  => $this->statusCode,
+            'body'    => (string) $this->body,
+            'headers' => $this->headers->toArray()
+        );
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->__construct($data['status'], $data['headers'], $data['body']);
+    }
+
     /**
      * Get the response entity body
      *

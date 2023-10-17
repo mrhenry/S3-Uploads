@@ -74,7 +74,7 @@ class HeaderCollection implements \IteratorAggregate, \Countable, \ArrayAccess, 
         return isset($this->headers[strtolower($offset)]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         $l = strtolower($offset);
 
