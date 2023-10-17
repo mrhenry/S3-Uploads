@@ -105,7 +105,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
         }
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->all());
     }

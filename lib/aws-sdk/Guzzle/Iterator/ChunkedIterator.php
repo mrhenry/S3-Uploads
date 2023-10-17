@@ -29,13 +29,13 @@ class ChunkedIterator extends \IteratorIterator
         $this->chunkSize = $chunkSize;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         parent::rewind();
         $this->next();
     }
 
-    public function next()
+    public function next(): void
     {
         $this->chunk = array();
         for ($i = 0; $i < $this->chunkSize && parent::valid(); $i++) {
@@ -49,7 +49,7 @@ class ChunkedIterator extends \IteratorIterator
         return $this->chunk;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return (bool) $this->chunk;
     }

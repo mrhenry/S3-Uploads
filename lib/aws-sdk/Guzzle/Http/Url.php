@@ -40,7 +40,7 @@ class Url
         $parts += $defaults;
 
         // Convert the query string into a QueryString object
-        if ($parts['query'] || 0 !== strlen($parts['query'])) {
+        if ($parts['query'] || 0 !== strlen($parts['query'] ?? '')) {
             $parts['query'] = QueryString::fromString($parts['query']);
         }
 
@@ -278,6 +278,12 @@ class Url
         static $pathReplace = array(' ' => '%20', '?' => '%3F');
         if (is_array($path)) {
             $path = '/' . implode('/', $path);
+        }
+
+        if ($path === null) {
+            $this->path = null;
+
+            return $this;
         }
 
         $this->path = strtr($path, $pathReplace);

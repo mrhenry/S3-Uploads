@@ -113,12 +113,12 @@ class Header implements HeaderInterface
         return $this->values;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->toArray());
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->toArray());
     }

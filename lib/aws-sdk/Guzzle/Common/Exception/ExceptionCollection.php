@@ -60,7 +60,7 @@ class ExceptionCollection extends \Exception implements GuzzleException, \Iterat
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->exceptions);
     }
@@ -70,7 +70,7 @@ class ExceptionCollection extends \Exception implements GuzzleException, \Iterat
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->exceptions);
     }

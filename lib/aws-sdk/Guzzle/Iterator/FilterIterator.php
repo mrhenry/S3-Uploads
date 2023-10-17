@@ -29,7 +29,7 @@ class FilterIterator extends \FilterIterator
         $this->callback = $callback;
     }
 
-    public function accept()
+    public function accept(): bool
     {
         return call_user_func($this->callback, $this->current());
     }
