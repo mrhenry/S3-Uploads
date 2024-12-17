@@ -98,11 +98,9 @@ function s3_uploads_autoload($class)
         'S3_Uploads_WP_CLI_Command' => __DIR__ . '/inc/class-s3-uploads-wp-cli-command.php',
         'S3_Uploads' => __DIR__ . '/inc/class-s3-uploads.php',
     );
-        
+    
     if (isset($mapping[$class])) {
-        if (isset($mapping[$class])) {
-            include $mapping[$class];
-        }
+        include $mapping[$class];
     }
 }
 
