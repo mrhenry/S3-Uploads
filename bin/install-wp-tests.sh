@@ -11,9 +11,9 @@ DB_PASS=$3
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 
-PHP_UNIT_CLONE_DIR=`mktemp -d -p "php-unit"`
-WP_TESTS_DIR=`mktemp -d -p "wordpress-tests-lib"`
-WP_CORE_DIR=`mktemp -d -p "wordpress"`
+PHP_UNIT_CLONE_DIR=`mktemp -d`
+WP_TESTS_DIR=`mktemp -d`
+WP_CORE_DIR=`mktemp -d`
 
 set -ex
 
