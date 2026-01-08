@@ -44,7 +44,7 @@ install_test_suite() {
 	mkdir -p $WP_TESTS_DIR
 
 	cd $PHP_UNIT_CLONE_DIR
-	git clone git://develop.git.wordpress.org/
+	git clone git://develop.git.wordpress.org/ ./
 	cp -r $PHP_UNIT_CLONE_DIR/tests/phpunit/includes $WP_TESTS_DIR
 	cp $PHP_UNIT_CLONE_DIR/wp-tests-config-sample.php $WP_TESTS_DIR/wp-tests-config.php
 
