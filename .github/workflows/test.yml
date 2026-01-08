@@ -1,0 +1,52 @@
+name: Test
+on:
+  push:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Test node 18/20/22/24 on ubuntu
+      # Test node 24 on macos/windows
+      # Enable annotations only for node 24 + ubuntu
+      matrix:
+        os: [ubuntu-latest]
+        php: ['8.1', '8.2']
+        wordpress: ['6.6.4']
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+          MYSQL_DATABASE: wp_tests_db
+          MYSQL_USER: wp_test
+          MYSQL_PASSWORD: password
+          MYSQL_HOST: 127.0.0.1
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+
+    - name: check out
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+    - name: setup
+      env:
+        WP_VERSION: ${{ matrix.wordpress }}
+      run: |
+        bash bin/install-wp-tests.sh wp_tests_db wp_test password 127.0.0.1 $WP_VERSION
+        pecl install imagick
+
+    - name: test
+      run: |
+        phpunit

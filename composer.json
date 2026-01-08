@@ -7,23 +7,12 @@
 	],
 	"license": "GPL-2.0+",
 	"support"    : {
-		"issues": "https://github.com/mrhenry/s3-uploads/issues",
-		"source": "https://github.com/mrhenry/s3-uploads"
+		"issues": "https://github.com/mrhenry/S3-Uploads/issues",
+		"source": "https://github.com/mrhenry/S3-Uploads"
 	},
 	"type": "wordpress-plugin",
 	"require": {
 		"composer/installers": "^1.0 || ^2.0"
-	},
-	"require-dev": {
-		"wp-coding-standards/wpcs": "^2.2"
-	},
-	"scripts": {
-		"post-install-cmd": [
-			"\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs"
-		],
-		"post-update-cmd": [
-			"\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs"
-		]
 	},
 	"archive": {
 		"exclude": [
@@ -35,7 +24,11 @@
 	},
 	"config": {
 		"allow-plugins": {
-			"composer/installers": true
+			"composer/installers": true,
+			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
+	},
+	"require-dev": {
+		"wp-coding-standards/wpcs": "^3.0"
 	}
 }
