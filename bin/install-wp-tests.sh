@@ -12,8 +12,10 @@ DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 
 PHP_UNIT_CLONE_DIR=`mktemp -d`
-WP_TESTS_DIR=`mktemp -d`
-WP_CORE_DIR=`mktemp -d`
+PHP_UNIT_POLYFILLS_CLONE_DIR=/tmp/php-unit-polyfills/
+
+WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
+WP_CORE_DIR=/tmp/wordpress/
 
 set -ex
 
@@ -48,35 +50,17 @@ install_test_suite() {
 	cp -r $PHP_UNIT_CLONE_DIR/tests/phpunit/includes $WP_TESTS_DIR
 	cp $PHP_UNIT_CLONE_DIR/wp-tests-config-sample.php $WP_TESTS_DIR/wp-tests-config.php
 
+	mkdir -p $PHP_UNIT_POLYFILLS_CLONE_DIR
+	cd $PHP_UNIT_POLYFILLS_CLONE_DIR
+	git clone https://github.com/Yoast/PHPUnit-Polyfills.git ./
+
 	cd $WP_TESTS_DIR
 	sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" wp-tests-config.php
-	sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" wp-tests-config.php
-	sed $ioption "s/yourusernamehere/$DB_USER/" wp-tests-config.php
-	sed $ioption "s/yourpasswordhere/$DB_PASS/" wp-tests-config.php
-	sed $ioption "s|localhost|${DB_HOST}|" wp-tests-config.php
-}
-
-install_db() {
-	# parse DB_HOST for port or socket references
-	local PARTS=(${DB_HOST//\:/ })
-	local DB_HOSTNAME=${PARTS[0]};
-	local DB_SOCK_OR_PORT=${PARTS[1]};
-	local EXTRA=""
-
-	if ! [ -z $DB_HOSTNAME ] ; then
-		if [[ "$DB_SOCK_OR_PORT" =~ ^[0-9]+$ ]] ; then
-			EXTRA=" --host=$DB_HOSTNAME --port=$DB_SOCK_OR_PORT --protocol=tcp"
-		elif ! [ -z $DB_SOCK_OR_PORT ] ; then
-			EXTRA=" --socket=$DB_SOCK_OR_PORT"
-		elif ! [ -z $DB_HOSTNAME ] ; then
-			EXTRA=" --host=$DB_HOSTNAME --protocol=tcp"
-		fi
-	fi
-
-	# create database
-	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
+	sed $ioption "s/youremptytestdbnamehere/$MYSQL_DATABASE/" wp-tests-config.php
+	sed $ioption "s/yourusernamehere/$MYSQL_USER/" wp-tests-config.php
+	sed $ioption "s/yourpasswordhere/$MYSQL_PASSWORD/" wp-tests-config.php
+	sed $ioption "s|localhost|${MYSQL_HOST}|" wp-tests-config.php
 }
 
 install_wp
 install_test_suite
-install_db
