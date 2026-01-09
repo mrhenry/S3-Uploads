@@ -54,7 +54,7 @@ jobs:
 
     - name: poke s3
       run: |
-        curl 127.0.0.1:9090 > /dev/null
+        curl --fail 127.0.0.1:9090 > /dev/null
 
     - name: setup wordpress tests
       env:
