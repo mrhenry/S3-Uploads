@@ -1,0 +1,70 @@
+name: Test
+on:
+  push:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php: ['8.1']
+        wordpress: ['6.6.4']
+    services:
+      s3:
+        image: adobe/s3mock
+        ports:
+          - 9090:9090
+          - 9191:9191
+        env:
+          COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: "test-bucket"
+          COM_ADOBE_TESTING_S3MOCK_STORE_VALID_KMS_KEYS: "arn:aws:kms:us-east-1:1234567890:key/valid-secret"
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+          MYSQL_DATABASE: wp_tests_db
+          MYSQL_USER: wp_test
+          MYSQL_PASSWORD: password
+          MYSQL_HOST: 127.0.0.1
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        tools: phpunit:9
+        extensions: imagick
+
+    - name: install svn
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y subversion
+
+    - name: checkout
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+    - name: setup wordpress tests
+      env:
+        WP_VERSION: ${{ matrix.wordpress }}
+      run: |
+        bash bin/install-wp-tests.sh wp_tests_db wp_test password 127.0.0.1 $WP_VERSION
+
+    - name: test
+      env:
+        S3_UPLOADS_BUCKET: test-bucket
+        S3_UPLOADS_KEY: 1234567890
+        S3_UPLOADS_SECRET: valid-secret
+        S3_UPLOADS_BUCKET_URL: "http://127.0.0.1:9090"
+        S3_UPLOADS_REGION: ''
+        S3_UPLOADS_BASE_URL: "http://127.0.0.1:9090"
+      run: |
+        phpunit

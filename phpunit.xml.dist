@@ -22,4 +22,7 @@
 			</exclude>
 		</whitelist>
 	</filter>
+	<php>
+		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="/tmp/php-unit-polyfills/"/>
+	</php>
 </phpunit>
