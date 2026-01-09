@@ -196,6 +196,10 @@ class S3_Uploads {
 
 		$params = array();
 
+		if ( defined( 'S3_UPLOADS_BASE_URL' ) ) {
+			$params['base_url'] = S3_UPLOADS_BASE_URL;
+		}
+
 		if ( $this->key && $this->secret ) {
 			$params['key']    = $this->key;
 			$params['secret'] = $this->secret;

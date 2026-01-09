@@ -52,10 +52,6 @@ jobs:
     - name: checkout
       uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-    - name: poke s3
-      run: |
-        curl --fail 127.0.0.1:9090 > /dev/null
-
     - name: setup wordpress tests
       env:
         WP_VERSION: ${{ matrix.wordpress }}
@@ -69,5 +65,6 @@ jobs:
         S3_UPLOADS_SECRET: valid-secret
         S3_UPLOADS_BUCKET_URL: "http://127.0.0.1:9090"
         S3_UPLOADS_REGION: ''
+        S3_UPLOADS_BASE_URL: "http://127.0.0.1:9090"
       run: |
         phpunit

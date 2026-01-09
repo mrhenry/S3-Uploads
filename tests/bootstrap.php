@@ -11,7 +11,7 @@
 // 2. Plugin installed inside of WordPress.org developer checkout
 // 3. Tests checked out to /tmp
 if ( false !== getenv( 'WP_DEVELOP_DIR' ) ) {
-	$test_root = getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit';
+	$test_root = getenv( 'WP_DEVELOP_DIR' );
 } elseif ( file_exists( '../../../../tests/phpunit/includes/bootstrap.php' ) ) {
 	$test_root = '../../../../tests/phpunit';
 } elseif ( file_exists( '/tmp/wordpress-tests-lib/includes/bootstrap.php' ) ) {
@@ -43,6 +43,10 @@ if ( getenv( 'S3_UPLOADS_BUCKET_URL' ) ) {
 
 if ( getenv( 'S3_UPLOADS_REGION' ) ) {
 	define( 'S3_UPLOADS_REGION', getenv( 'S3_UPLOADS_REGION' ) );
+}
+
+if ( getenv( 'S3_UPLOADS_BASE_URL' ) ) {
+	define( 'S3_UPLOADS_BASE_URL', getenv( 'S3_UPLOADS_BASE_URL' ) );
 }
 
 require $test_root . '/includes/bootstrap.php';
