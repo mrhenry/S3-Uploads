@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Test node 18/20/22/24 on ubuntu
-      # Test node 24 on macos/windows
-      # Enable annotations only for node 24 + ubuntu
       matrix:
         os: [ubuntu-latest]
         php: ['8.1']
@@ -28,50 +25,40 @@ jobs:
           - 9191:9191
         env:
           COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: "test-bucket"
-        options: --health-cmd="curl http://127.0.0.1:9090" --health-interval=5s --health-timeout=2s --health-retries=3
-      # mysql:
-      #   image: mysql:8
-      #   env:
-      #     MYSQL_RANDOM_ROOT_PASSWORD: 1
-      #     MYSQL_DATABASE: wp_tests_db
-      #     MYSQL_USER: wp_test
-      #     MYSQL_PASSWORD: password
-      #     MYSQL_HOST: 127.0.0.1
-      #   ports:
-      #     - 3306:3306
-      #   options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+          COM_ADOBE_TESTING_S3MOCK_STORE_VALID_KMS_KEYS: "arn:aws:kms:us-east-1:1234567890:key/valid-secret"
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+          MYSQL_DATABASE: wp_tests_db
+          MYSQL_USER: wp_test
+          MYSQL_PASSWORD: password
+          MYSQL_HOST: 127.0.0.1
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        tools: phpunit:9
+        extensions: imagick
 
-    - name: setup s3 bucket
+    - name: checkout
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+    - name: setup wordpress tests
+      env:
+        WP_VERSION: ${{ matrix.wordpress }}
       run: |
-        curl http://127.0.0.1:9090
+        bash bin/install-wp-tests.sh wp_tests_db wp_test password 127.0.0.1 $WP_VERSION
 
-    # - uses: shivammathur/setup-php@v2
-    #   with:
-    #     php-version: ${{ matrix.php }}
-    #     tools: phpunit:9
-    #     extensions: imagick
-
-    # - name: checkout
-    #   uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
-    # - name: setup wordpress tests
-    #   env:
-    #     WP_VERSION: ${{ matrix.wordpress }}
-    #   run: |
-    #     bash bin/install-wp-tests.sh wp_tests_db wp_test password 127.0.0.1 $WP_VERSION
-
-    # - name: setup s3 bucket
-    #   run: |
-    #     curl "http://127.0.0.1:9000/ui/test-bucket?create"
-    #     curl "http://127.0.0.1:9000/ui/test-bucket?make-public"
-
-    # - name: test
-    #   env:
-    #     S3_UPLOADS_BUCKET: test-bucket
-    #     S3_UPLOADS_KEY: AKIAIOSFODNN7EXAMPLE
-    #     S3_UPLOADS_SECRET: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-    #     S3_UPLOADS_BUCKET_URL: "http://127.0.0.1:9000"
-    #     S3_UPLOADS_REGION: ''
-    #   run: |
-    #     phpunit
+    - name: test
+      env:
+        S3_UPLOADS_BUCKET: test-bucket
+        S3_UPLOADS_KEY: 1234567890
+        S3_UPLOADS_SECRET: valid-secret
+        S3_UPLOADS_BUCKET_URL: "http://127.0.0.1:9090"
+        S3_UPLOADS_REGION: ''
+      run: |
+        phpunit

@@ -7,6 +7,7 @@ class S3_Uploads {
 	private $bucket_url;
 	private $key;
 	private $secret;
+	private $region;
 
 	public $original_upload_dir;
 
@@ -151,7 +152,7 @@ class S3_Uploads {
 		// Prevent duplicate deletes caused by wp delete actions
 		\add_filter(
 			'wp_delete_file',
-			function( $file_wp_wants_to_delete ) use ( $deleted ) {
+			function ( $file_wp_wants_to_delete ) use ( $deleted ) {
 				// File already deleted, prevent duplicate 'unlink' calls
 				if ( $deleted[ $file_wp_wants_to_delete ] ?? false ) {
 					return false;
