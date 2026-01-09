@@ -28,8 +28,6 @@ jobs:
           - 9191:9191
         env:
           COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: "test-bucket"
-          debug: true
-          trace: true
         options: --health-cmd="curl http://127.0.0.1:9090" --health-interval=5s --health-timeout=2s --health-retries=3
       # mysql:
       #   image: mysql:8
