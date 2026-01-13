@@ -42,8 +42,11 @@ jobs:
         tools: phpunit:9
         extensions: imagick
 
-    - name: test bucket data
-      run: curl --fail http://127.0.0.1:8000/storage/v1/b/test-bucket/o
+    - name: create bucket
+      run: |
+        curl -X POST --data '{ "name": "test-bucket", "location": "US", "storageClass": "STANDARD", "iamConfiguration": { "uniformBucketLevelAccess": { "enabled": true } } }' \
+        -H "Content-Type: application/json" \
+        "http://0.0.0.0:8000/storage/v1/b"
 
     - name: install svn
       run: |
