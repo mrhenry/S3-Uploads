@@ -20,7 +20,7 @@ jobs:
     services:
       gcs:
         image: fsouza/fake-gcs-server
-        options: --entry-point="/bin/fake-gcs-server -data /data -scheme both"
+        options: --entrypoint="/bin/fake-gcs-server -data /data -scheme both"
         ports:
           - 4443:4443
           - 8000:8000
