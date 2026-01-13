@@ -20,12 +20,10 @@ jobs:
     services:
       gcs:
         image: fsouza/fake-gcs-server
-        options: --entrypoint="/bin/fake-gcs-server -data /data -scheme both"
+        options: --entrypoint="/bin/fake-gcs-server -scheme both"
         ports:
           - 4443:4443
           - 8000:8000
-        volumes:
-        - /tests/data-result:/data
       mysql:
         image: mysql:8
         env:
