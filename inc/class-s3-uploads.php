@@ -8,6 +8,7 @@ class S3_Uploads {
 	private $key;
 	private $secret;
 	private $region;
+	private $s3;
 
 	public $original_upload_dir;
 

@@ -11,11 +11,21 @@ services:
     ports:
       - 3306:3306
 
-  s3:
-    image: adobe/s3mock
-    environment:
-      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: "test-bucket"
-      COM_ADOBE_TESTING_S3MOCK_STORE_VALID_KMS_KEYS: "arn:aws:kms:us-east-1:1234567890:key/valid-secret"
+  gcs:
+    image: fsouza/fake-gcs-server
+    entrypoint: /bin/fake-gcs-server -data /data -scheme both
     ports:
-      - 9090:9090
-      - 9191:9191
+      - 4443:4443
+      - 8000:8000
+    volumes:
+      - type: volume
+        source: gcs-data
+        target: /data
+
+volumes:
+  gcs-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./tests/data-result

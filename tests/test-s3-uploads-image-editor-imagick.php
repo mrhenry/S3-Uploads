@@ -1,10 +1,9 @@
 <?php
 
 class Test_S3_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
+	private $image_path = __DIR__ . '/data/canola.jpg';
 
 	protected function setUp(): void {
-		$this->image_path = __DIR__ . '/data/canola.jpg';
-
 		require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
 		require_once ABSPATH . WPINC . '/class-wp-image-editor-imagick.php';
 
@@ -16,7 +15,7 @@ class Test_S3_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 	public function test_s3_upload_image_editor_is_present() {
 		$editors = apply_filters( 'wp_image_editors', array( 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ) );
 
-		$this->assertFalse( in_array( 'WP_Image_Editor_Imagick', $editors ), 'Imagick editor should be removed from the image editors array.' );
+		$this->assertFalse( in_array( 'WP_Image_Editor_Imagick', $editors, true ), 'Imagick editor should be removed from the image editors array.' );
 	}
 
 	/**

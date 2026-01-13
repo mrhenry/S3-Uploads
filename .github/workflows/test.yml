@@ -18,14 +18,14 @@ jobs:
         php: ['8.1']
         wordpress: ['6.6.4']
     services:
-      s3:
-        image: adobe/s3mock
+      gcs:
+        image: fsouza/fake-gcs-server
+        options: --entry-point="/bin/fake-gcs-server -data /data -scheme both"
         ports:
-          - 9090:9090
-          - 9191:9191
-        env:
-          COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: "test-bucket"
-          COM_ADOBE_TESTING_S3MOCK_STORE_VALID_KMS_KEYS: "arn:aws:kms:us-east-1:1234567890:key/valid-secret"
+          - 4443:4443
+          - 8000:8000
+        volumes:
+        - /tests/data-result:/data
       mysql:
         image: mysql:8
         env:
@@ -43,6 +43,9 @@ jobs:
         php-version: ${{ matrix.php }}
         tools: phpunit:9
         extensions: imagick
+
+    - name: test bucket data
+      run: curl --fail http://127.0.0.1:8000/storage/v1/b/test-bucket/o
 
     - name: install svn
       run: |
