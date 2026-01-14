@@ -69,12 +69,8 @@ class S3_Uploads {
 	 * Register the stream wrapper for s3
 	 */
 	public function register_stream_wrapper() {
-		if ( defined( 'S3_UPLOADS_USE_LOCAL' ) && S3_UPLOADS_USE_LOCAL ) {
-			stream_wrapper_register( 's3', 'S3_Uploads_Local_Stream_Wrapper', STREAM_IS_URL );
-		} else {
-			S3_Uploads_Stream_Wrapper::register_streamwrapper( $this );
-			stream_context_set_option( stream_context_get_default(), 's3', 'ACL', 'public-read' );
-		}
+		S3_Uploads_Stream_Wrapper::register_streamwrapper( $this );
+		stream_context_set_option( stream_context_get_default(), 's3', 'ACL', 'public-read' );
 
 		stream_context_set_option( stream_context_get_default(), 's3', 'seekable', true );
 	}
@@ -87,15 +83,8 @@ class S3_Uploads {
 		$dirs['basedir'] = str_replace( WP_CONTENT_DIR, 's3://' . $this->bucket, $dirs['basedir'] );
 
 		if ( ! defined( 'S3_UPLOADS_DISABLE_REPLACE_UPLOAD_URL' ) || ! S3_UPLOADS_DISABLE_REPLACE_UPLOAD_URL ) {
-
-			if ( defined( 'S3_UPLOADS_USE_LOCAL' ) && S3_UPLOADS_USE_LOCAL ) {
-				$dirs['url']     = str_replace( 's3://' . $this->bucket, $dirs['baseurl'] . '/s3/' . $this->bucket, $dirs['path'] );
-				$dirs['baseurl'] = str_replace( 's3://' . $this->bucket, $dirs['baseurl'] . '/s3/' . $this->bucket, $dirs['basedir'] );
-
-			} else {
-				$dirs['url']     = str_replace( 's3://' . $this->bucket, $this->get_s3_url(), $dirs['path'] );
-				$dirs['baseurl'] = str_replace( 's3://' . $this->bucket, $this->get_s3_url(), $dirs['basedir'] );
-			}
+			$dirs['url']     = str_replace( 's3://' . $this->bucket, $this->get_s3_url(), $dirs['path'] );
+			$dirs['baseurl'] = str_replace( 's3://' . $this->bucket, $this->get_s3_url(), $dirs['basedir'] );
 		}
 
 		return $dirs;

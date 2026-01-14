@@ -8,10 +8,6 @@ Version: 1.1.0
 Author URI: http://hmn.md
 */
 
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	require_once __DIR__ . '/inc/class-s3-uploads-wp-cli-command.php';
-}
-
 add_action( 'plugins_loaded', 's3_uploads_init' );
 
 function s3_uploads_init() {
@@ -90,12 +86,8 @@ function s3_uploads_enabled() {
  */
 function s3_uploads_autoload( $class ) {
 	$mapping = array(
-		'S3_Uploads_ChangedFilesIterator' => __DIR__ . '/inc/class-s3-uploads-changed-files-iterator.php',
 		'S3_Uploads_Image_Editor_Imagick' => __DIR__ . '/inc/class-s3-uploads-image-editor-imagick.php',
-		'S3_Uploads_Local_Stream_Wrapper' => __DIR__ . '/inc/class-s3-uploads-local-stream-wrapper.php',
 		'S3_Uploads_Stream_Wrapper'       => __DIR__ . '/inc/class-s3-uploads-stream-wrapper.php',
-		'S3_Uploads_UploadSyncBuilder'    => __DIR__ . '/inc/class-s3-uploads-uploadsyncbuilder.php',
-		'S3_Uploads_WP_CLI_Command'       => __DIR__ . '/inc/class-s3-uploads-wp-cli-command.php',
 		'S3_Uploads'                      => __DIR__ . '/inc/class-s3-uploads.php',
 	);
 

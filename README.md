@@ -71,46 +71,6 @@ This will provide you with a new Access Key and Secret Key which you can configu
 
 If you want to create your IAM user yourself, or attach the neccessary permissions to an existing user, you can output the policy via `wp s3-uploads generate-iam-policy`
 
-Migrating your Media to S3
-==========
-
-S3-Uploads can migrate your existing media library to S3. Once you have S3-Uploads up and running, use the following WP-CLI command:
-
-```
-wp s3-uploads migrate-attachments [--delete-local]
-```
-
-By default, S3-Uploads will keep your files locally just incase something goes wrong, but you can delete with the `--delete-local` flag.
-
-
-Listing files on S3
-==========
-
-S3-Uploads comes with a WP-CLI command for listing files in the S3 bucket for debugging etc.
-
-```
-wp s3-uploads ls [<path>]
-```
-
-Uploading files to S3
-==========
-
-Sometimes the `wp s3-uploads migrate-attachments` command may not be enough to migrate your uploads to S3, as that will only move attachment files to S3. If you are using any plugins that store data in uploads, you'll want to upload the whole `uploads` directory.
-
-```
-wp s3-uploads upload-directory <from> <to> [--sync] [--dry-run]
-```
-
-Passing `--sync` will only upload files that are newer in `<from>` or that don't exist on S3 already. Use `--dry-run` to test.
-
-There is also an all purpose `cp` command for arbitrary copying to and from S3.
-
-```
-wp s3-uploads cp <from> <to>
-```
-
-Note: as either `<from>` or `<to>` can be S3 or local locations, you must specify the full S3 location via `s3://mybucket/mydirectory` for example `cp ./test.txt s3://mybucket/test.txt`.
-
 Cache Control
 ==========
 
@@ -154,7 +114,6 @@ While it's possible to use S3 Uploads for local development (this is actually a 
 if you want to develop offline you have a couple of options.
 
 1. Just disable the S3 Uploads plugin in your development environment.
-2. Define the `S3_UPLOADS_USE_LOCAL` constant with the plugin active.
 
 Option 2 will allow you to run the S3 Uploads plugin for production parity purposes, it will essentially mock
 Amazon S3 with a local stream wrapper and actually store the uploads in your WP Upload Dir `/s3/`.
