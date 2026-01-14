@@ -20,10 +20,8 @@ jobs:
     services:
       gcs:
         image: fsouza/fake-gcs-server
-        options: --entrypoint="/bin/fake-gcs-server -scheme both"
         ports:
           - 4443:4443
-          - 8000:8000
       mysql:
         image: mysql:8
         env:
@@ -44,9 +42,9 @@ jobs:
 
     - name: create bucket
       run: |
-        curl -X POST --data '{ "name": "test-bucket", "location": "US", "storageClass": "STANDARD", "iamConfiguration": { "uniformBucketLevelAccess": { "enabled": true } } }' \
+        curl -X POST --insecure --data '{ "name": "test-bucket", "location": "US", "storageClass": "STANDARD", "iamConfiguration": { "uniformBucketLevelAccess": { "enabled": true } } }' \
         -H "Content-Type: application/json" \
-        "http://0.0.0.0:8000/storage/v1/b"
+        "https://0.0.0.0:4443/storage/v1/b"
 
     - name: install svn
       run: |

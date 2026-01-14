@@ -13,19 +13,6 @@ services:
 
   gcs:
     image: fsouza/fake-gcs-server
-    entrypoint: /bin/fake-gcs-server -data /data -scheme both
+    entrypoint: /bin/fake-gcs-server
     ports:
       - 4443:4443
-      - 8000:8000
-    volumes:
-      - type: volume
-        source: gcs-data
-        target: /data
-
-volumes:
-  gcs-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./tests/data-result
