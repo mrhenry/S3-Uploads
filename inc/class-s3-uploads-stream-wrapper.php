@@ -50,7 +50,6 @@ class S3_Uploads_Stream_Wrapper extends Aws\S3\StreamWrapper {
 		$this->params = apply_filters( 's3_uploads_putObject_params', $this->params );
 
 		return parent::stream_flush();
-
 	}
 
 	/**
@@ -84,8 +83,9 @@ class S3_Uploads_Stream_Wrapper extends Aws\S3\StreamWrapper {
 		 * As a work around, we attempt to write an empty object.
 		 */
 		try {
-			$p         = $this->params;
-			$p['Body'] = '';
+			$p              = $this->params;
+			$p['Body']      = '';
+
 			static::$client->putObject( $p );
 		} catch ( \Exception $e ) {
 			return $this->triggerError( $e->getMessage() );

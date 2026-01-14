@@ -4,11 +4,10 @@ class Test_S3_Uploads_Stream_Wrapper extends WP_UnitTestCase {
 
 	protected $s3 = null;
 
-	public function setUp() {
-
+	protected function setUp(): void {
 	}
 
-	public function tearDown() {
+	protected function tearDown(): void {
 		stream_wrapper_unregister( 's3' );
 		S3_Uploads::get_instance()->register_stream_wrapper();
 	}
@@ -19,16 +18,16 @@ class Test_S3_Uploads_Stream_Wrapper extends WP_UnitTestCase {
 
 	public function test_copy_via_stream_wrapper() {
 
-		$local_path = dirname( __FILE__ ) . '/data/canola.jpg';
+		$local_path  = __DIR__ . '/data/canola.jpg';
 		$remote_path = 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg';
-		$result = copy( $local_path, $remote_path );
+		$result      = copy( $local_path, $remote_path );
 		$this->assertTrue( $result );
 		$this->assertEquals( file_get_contents( $local_path ), file_get_contents( $remote_path ) );
 	}
 
 	public function test_rename_via_stream_wrapper() {
 
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
+		copy( __DIR__ . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
 		$result = rename( 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola-test.jpg' );
 		$this->assertTrue( $result );
 		$this->assertTrue( file_exists( 's3://' . S3_UPLOADS_BUCKET . '/canola-test.jpg' ) );
@@ -36,7 +35,7 @@ class Test_S3_Uploads_Stream_Wrapper extends WP_UnitTestCase {
 
 	public function test_unlink_via_stream_wrapper() {
 
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
+		copy( __DIR__ . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
 		$result = unlink( 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
 		$this->assertTrue( $result );
 		$this->assertFalse( file_exists( 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' ) );
@@ -44,16 +43,16 @@ class Test_S3_Uploads_Stream_Wrapper extends WP_UnitTestCase {
 
 	public function test_copy_via_stream_wrapper_fails_on_invalid_permission() {
 		$bucket_root = strtok( S3_UPLOADS_BUCKET, '/' );
-		$result = @copy( dirname( __FILE__ ) . '/data/canola.jpg', 's3://' . $bucket_root . '/canola.jpg' );
+		$result      = @copy( __DIR__ . '/data/canola.jpg', 's3://' . $bucket_root . '/canola.jpg' );
 
 		$this->assertFalse( $result );
 	}
 
 	public function test_rename_via_stream_wrapper_fails_on_invalid_permission() {
 
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
+		copy( __DIR__ . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
 		$bucket_root = strtok( S3_UPLOADS_BUCKET, '/' );
-		$result = @rename( 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg', 's3://' . $bucket_root . '/canola.jpg' );
+		$result      = @rename( 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg', 's3://' . $bucket_root . '/canola.jpg' );
 
 		$this->assertFalse( $result );
 	}
@@ -80,35 +79,38 @@ class Test_S3_Uploads_Stream_Wrapper extends WP_UnitTestCase {
 	}
 
 	public function get_file_exists_via_stream_wrapper() {
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
+		copy( __DIR__ . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
 		$this->assertTrue( file_exists( 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' ) );
 		$this->assertFalse( file_exists( 's3://' . S3_UPLOADS_BUCKET . '/canola-missing.jpg' ) );
 	}
 
 	public function test_getimagesize_via_stream_wrapper() {
 
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
+		copy( __DIR__ . '/data/canola.jpg', 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg' );
 		$file = 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg';
 
 		$image = getimagesize( $file );
 
-		$this->assertEquals( array(
-			640,
-			480,
-			2,
-			'width="640" height="480"',
-			'bits' => 8,
-			'channels' => 3,
-			'mime' => 'image/jpeg',
-		), $image );
+		$this->assertEquals(
+			array(
+				640,
+				480,
+				2,
+				'width="640" height="480"',
+				'bits'     => 8,
+				'channels' => 3,
+				'mime'     => 'image/jpeg',
+			),
+			$image
+		);
 	}
 
 	public function test_stream_wrapper_supports_seeking() {
 
 		$file = 's3://' . S3_UPLOADS_BUCKET . '/canola.jpg';
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', $file );
+		copy( __DIR__ . '/data/canola.jpg', $file );
 
-		$f = fopen( $file, 'r' );
+		$f      = fopen( $file, 'r' );
 		$result = fseek( $f, 0, SEEK_END );
 		fclose( $f );
 
@@ -118,16 +120,23 @@ class Test_S3_Uploads_Stream_Wrapper extends WP_UnitTestCase {
 	public function test_wp_handle_upload() {
 
 		$path = tempnam( sys_get_temp_dir(), 'canola' ) . '.jpg';
-		copy( dirname( __FILE__ ) . '/data/canola.jpg', $path );
+		copy( __DIR__ . '/data/canola.jpg', $path );
 		$contents = file_get_contents( $path );
-		$file = array(
+		$file     = array(
 			'error'    => null,
 			'tmp_name' => $path,
 			'name'     => 'can.jpg',
 			'size'     => filesize( $path ),
- 		);
+		);
 
-		$result = wp_handle_upload( $file, array( 'test_form' => false, 'test_size' => false, 'action' => 'wp_handle_sideload' ) );
+		$result = wp_handle_upload(
+			$file,
+			array(
+				'test_form' => false,
+				'test_size' => false,
+				'action'    => 'wp_handle_sideload',
+			)
+		);
 
 		$this->assertTrue( empty( $result['error'] ) );
 		$this->assertTrue( file_exists( $result['file'] ) );

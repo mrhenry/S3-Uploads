@@ -1,0 +1,18 @@
+services:
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: wp_tests_db
+      MYSQL_USER: wp_test
+      MYSQL_PASSWORD: password
+      MYSQL_HOST: 127.0.0.1
+    ports:
+      - 3306:3306
+
+  gcs:
+    image: fsouza/fake-gcs-server
+    entrypoint: /bin/fake-gcs-server
+    ports:
+      - 4443:4443

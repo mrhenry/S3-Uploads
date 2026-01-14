@@ -9,7 +9,7 @@ Author URI: http://hmn.md
 */
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	require_once dirname( __FILE__ ) . '/inc/class-s3-uploads-wp-cli-command.php';
+	require_once __DIR__ . '/inc/class-s3-uploads-wp-cli-command.php';
 }
 
 add_action( 'plugins_loaded', 's3_uploads_init' );
@@ -58,7 +58,8 @@ function s3_uploads_check_requirements() {
  * This has to be a named function for compatibility with PHP 5.2.
  */
 function s3_uploads_outdated_php_version_notice() {
-	printf( '<div class="error"><p>The S3 Uploads plugin requires PHP version 5.3.3 or higher. Your server is running PHP version %s.</p></div>',
+	printf(
+		'<div class="error"><p>The S3 Uploads plugin requires PHP version 5.3.3 or higher. Your server is running PHP version %s.</p></div>',
 		PHP_VERSION
 	);
 }
@@ -87,23 +88,22 @@ function s3_uploads_enabled() {
  *
  * @param $class_name Name of the class to load.
  */
-function s3_uploads_autoload($class) {
+function s3_uploads_autoload( $class ) {
 	$mapping = array(
 		'S3_Uploads_ChangedFilesIterator' => __DIR__ . '/inc/class-s3-uploads-changed-files-iterator.php',
 		'S3_Uploads_Image_Editor_Imagick' => __DIR__ . '/inc/class-s3-uploads-image-editor-imagick.php',
 		'S3_Uploads_Local_Stream_Wrapper' => __DIR__ . '/inc/class-s3-uploads-local-stream-wrapper.php',
-		'S3_Uploads_Stream_Wrapper' => __DIR__ . '/inc/class-s3-uploads-stream-wrapper.php',
-		'S3_Uploads_UploadSyncBuilder' => __DIR__ . '/inc/class-s3-uploads-uploadsyncbuilder.php',
-		'S3_Uploads_WP_CLI_Command' => __DIR__ . '/inc/class-s3-uploads-wp-cli-command.php',
-		'S3_Uploads' => __DIR__ . '/inc/class-s3-uploads.php',
+		'S3_Uploads_Stream_Wrapper'       => __DIR__ . '/inc/class-s3-uploads-stream-wrapper.php',
+		'S3_Uploads_UploadSyncBuilder'    => __DIR__ . '/inc/class-s3-uploads-uploadsyncbuilder.php',
+		'S3_Uploads_WP_CLI_Command'       => __DIR__ . '/inc/class-s3-uploads-wp-cli-command.php',
+		'S3_Uploads'                      => __DIR__ . '/inc/class-s3-uploads.php',
 	);
-	
-	if (isset($mapping[$class])) {
-		require $mapping[$class];
+
+	if ( isset( $mapping[ $class ] ) ) {
+		require $mapping[ $class ];
 	}
 }
 
-spl_autoload_register('s3_uploads_autoload', true);
+spl_autoload_register( 's3_uploads_autoload', true );
 
-// Require AWS Autoloader file.
-require_once dirname( __FILE__ ) . '/lib/aws-sdk/aws-autoloader.php';
+require 'vendor/autoload.php';

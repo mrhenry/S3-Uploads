@@ -1,0 +1,19 @@
+{
+	"phpsab.executablePathCBF": "vendor/bin/phpcbf",
+	"phpsab.fixerEnable": true,
+	"phpsab.snifferEnable": true,
+	"phpsab.snifferMode": "onSave",
+	"phpsab.allowedAutoRulesets": [
+		".phpcs.xml",
+		".phpcs.xml.dist",
+		"phpcs.ruleset.xml",
+		"phpcs.xml",
+		"phpcs.xml.dist",
+		"ruleset.xml"
+	],
+	"intelephense.files.maxSize": 10000000,
+	"intelephense.environment.phpVersion": "^8.2",
+	"intelephense.maxMemory": 1024,
+	"intelephense.phpdoc.useFullyQualifiedNames": true,
+	"intelephense.format.enable": false
+}
