@@ -16,7 +16,6 @@ class Test_GS_Uploads extends WP_UnitTestCase {
 		GS_Uploads::get_instance()->setup();
 
 		$this->assertEquals( 10, has_action( 'upload_dir', array( GS_Uploads::get_instance(), 'filter_upload_dir' ) ) );
-		$this->assertEquals( 9, has_action( 'wp_image_editors', array( GS_Uploads::get_instance(), 'filter_editors' ) ) );
 
 		$this->assertTrue( in_array( 'gs', stream_get_wrappers() ) );
 		GS_Uploads::get_instance()->tear_down();
@@ -31,7 +30,6 @@ class Test_GS_Uploads extends WP_UnitTestCase {
 		GS_Uploads::get_instance()->tear_down();
 
 		$this->assertFalse( has_action( 'upload_dir', array( GS_Uploads::get_instance(), 'filter_upload_dir' ) ) );
-		$this->assertFalse( has_action( 'wp_image_editors', array( GS_Uploads::get_instance(), 'filter_editors' ) ) );
 
 		$this->assertFalse( in_array( 'gs', stream_get_wrappers() ) );
 	}
@@ -52,14 +50,21 @@ class Test_GS_Uploads extends WP_UnitTestCase {
 
 		$meta_data = wp_generate_attachment_metadata( $attachment_id, $test_file );
 
-		$this->assertEqualFields(
-			array(
-				'file'      => 'canola-150x150.jpg',
-				'width'     => 150,
-				'height'    => 150,
-				'mime-type' => 'image/jpeg',
-			),
-			$meta_data['sizes']['thumbnail']
+		$this->assertEquals(
+			$meta_data['sizes']['thumbnail']['file'],
+			'canola-150x150.jpg'
+		);
+		$this->assertEquals(
+			$meta_data['sizes']['thumbnail']['width'],
+			150
+		);
+		$this->assertEquals(
+			$meta_data['sizes']['thumbnail']['height'],
+			150
+		);
+		$this->assertEquals(
+			$meta_data['sizes']['thumbnail']['mime-type'],
+			'image/jpeg'
 		);
 
 		$wp_upload_dir = wp_upload_dir();

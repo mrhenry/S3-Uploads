@@ -1,6 +1,6 @@
 <?php
 
-class Test_GS_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
+class Test_WP_Image_Editor_Imagick extends WP_UnitTestCase {
 	private $image_path = __DIR__ . '/data/canola.jpg';
 
 	protected function setUp(): void {
@@ -12,17 +12,7 @@ class Test_GS_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_gs_upload_image_editor_is_present() {
-		$editors = apply_filters( 'wp_image_editors', array( 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ) );
-
-		$this->assertFalse( in_array( 'WP_Image_Editor_Imagick', $editors, true ), 'Imagick editor should be removed from the image editors array.' );
-	}
-
-	/**
-	 * It's expected that we can't save image uses imagick built in, as
-	 * the undlaying system library can't write to the "gs://" filesystem.
-	 */
-	public function test_save_image_with_inbuilt_fails() {
+	public function test_save_image() {
 
 		$upload_dir = wp_upload_dir();
 		$path       = $upload_dir['basedir'] . '/canola.jpg';
@@ -31,38 +21,24 @@ class Test_GS_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 		$image_editor = new WP_Image_Editor_Imagick( $path );
 
 		$image_editor->load();
-		$status = $image_editor->save( $upload_dir['basedir'] . '/canola-100x100.jpg' );
-
-		$this->assertWPError( $status );
-	}
-
-	public function test_save_image() {
-
-		$upload_dir = wp_upload_dir();
-		$path       = $upload_dir['basedir'] . '/canola.jpg';
-		copy( $this->image_path, $path );
-
-		$image_editor = new GS_Uploads_Image_Editor_Imagick( $path );
-
-		$image_editor->load();
-		$image_editor->resize( 100, 100, true );
-		$status = $image_editor->save( $upload_dir['basedir'] . '/canola-100x100.jpg' );
+		$image_editor->resize( 100, 120, true );
+		$status = $image_editor->save( $upload_dir['basedir'] . '/canola-100x120.jpg' );
 
 		$this->assertNotInstanceOf( 'WP_Error', $status );
 
-		$this->assertEquals( $upload_dir['basedir'] . '/canola-100x100.jpg', $status['path'] );
-		$this->assertEquals( 'canola-100x100.jpg', $status['file'] );
+		$this->assertEquals( $upload_dir['basedir'] . '/canola-100x120.jpg', $status['path'] );
+		$this->assertEquals( 'canola-100x120.jpg', $status['file'] );
 		$this->assertEquals( 100, $status['width'] );
-		$this->assertEquals( 100, $status['height'] );
+		$this->assertEquals( 120, $status['height'] );
 
 		$image = getimagesize( $status['path'] );
 
 		$this->assertEquals(
 			array(
 				100,
-				100,
+				120,
 				2,
-				'width="100" height="100"',
+				'width="100" height="120"',
 				'bits'     => 8,
 				'channels' => 3,
 				'mime'     => 'image/jpeg',

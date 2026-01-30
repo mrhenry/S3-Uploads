@@ -20,16 +20,3 @@ add_action(
 		$instance->setup();
 	}
 );
-
-spl_autoload_register(
-	function ( $class ) {
-		$mapping = array(
-			'GS_Uploads_Image_Editor_Imagick' => __DIR__ . '/inc/class-gs-uploads-image-editor-imagick.php',
-		);
-
-		if ( isset( $mapping[ $class ] ) ) {
-			require $mapping[ $class ];
-		}
-	},
-	true
-);

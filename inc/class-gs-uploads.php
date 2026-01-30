@@ -47,7 +47,6 @@ class GS_Uploads {
 		self::$instance->storage->registerStreamWrapper();
 
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
-		add_filter( 'wp_image_editors', array( $this, 'filter_editors' ), 9 );
 		add_action( 'delete_attachment', array( $this, 'delete_attachment_files' ) );
 		remove_filter( 'admin_notices', 'wpthumb_errors' );
 	}
@@ -59,7 +58,6 @@ class GS_Uploads {
 		self::$instance->storage->unregisterStreamWrapper();
 
 		remove_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
-		remove_filter( 'wp_image_editors', array( $this, 'filter_editors' ), 9 );
 		remove_filter( 'delete_attachment', array( $this, 'delete_attachment_files' ) );
 	}
 
@@ -149,17 +147,5 @@ class GS_Uploads {
 		}
 
 		return apply_filters( 'gs_uploads_bucket_url', 'https://storage.googleapis.com/' . $this->bucket );
-	}
-
-	public function filter_editors( $editors ) {
-
-		$position = array_search( 'WP_Image_Editor_Imagick', $editors, true );
-		if ( $position !== false ) {
-			unset( $editors[ $position ] );
-		}
-
-		array_unshift( $editors, 'GS_Uploads_Image_Editor_Imagick' );
-
-		return $editors;
 	}
 }
