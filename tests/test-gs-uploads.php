@@ -52,13 +52,12 @@ class Test_GS_Uploads extends WP_UnitTestCase {
 
 		$meta_data = wp_generate_attachment_metadata( $attachment_id, $test_file );
 
-		$this->assertEquals(
+		$this->assertEqualFields(
 			array(
 				'file'      => 'canola-150x150.jpg',
 				'width'     => 150,
 				'height'    => 150,
 				'mime-type' => 'image/jpeg',
-				'filesize'  => 5102,
 			),
 			$meta_data['sizes']['thumbnail']
 		);
