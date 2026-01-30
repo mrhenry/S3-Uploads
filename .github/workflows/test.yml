@@ -19,7 +19,7 @@ jobs:
         wordpress: ['6.6.4']
     services:
       gcs:
-        image: fsouza/fake-gcs-server
+        image: ghcr.io/mrhenry/fake-gcs-server
         ports:
           - 4443:4443
       mysql:
@@ -34,7 +34,7 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
-    - uses: shivammathur/setup-php@v2
+    - uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36
       with:
         php-version: ${{ matrix.php }}
         tools: phpunit:9
@@ -42,9 +42,9 @@ jobs:
 
     - name: create bucket
       run: |
-        curl -X POST --insecure --data '{ "name": "test-bucket", "location": "US", "storageClass": "STANDARD", "iamConfiguration": { "uniformBucketLevelAccess": { "enabled": true } } }' \
+        curl -X POST --data '{ "name": "test-bucket", "location": "US", "storageClass": "STANDARD", "iamConfiguration": { "uniformBucketLevelAccess": { "enabled": true } } }' \
         -H "Content-Type: application/json" \
-        "https://0.0.0.0:4443/storage/v1/b"
+        "http://0.0.0.0:4443/storage/v1/b"
 
     - name: install svn
       run: |
@@ -57,16 +57,13 @@ jobs:
     - name: setup wordpress tests
       env:
         WP_VERSION: ${{ matrix.wordpress }}
+        TMPDIR: ./wp-test-root
       run: |
         bash bin/install-wp-tests.sh wp_tests_db wp_test password 127.0.0.1 $WP_VERSION
 
     - name: test
       env:
-        S3_UPLOADS_BUCKET: test-bucket
-        S3_UPLOADS_KEY: 1234567890
-        S3_UPLOADS_SECRET: valid-secret
-        S3_UPLOADS_BUCKET_URL: "http://127.0.0.1:9090"
-        S3_UPLOADS_REGION: ''
-        S3_UPLOADS_BASE_URL: "http://127.0.0.1:9090"
+        GS_UPLOADS_BUCKET: test-bucket
+        GS_UPLOADS_BUCKET_URL: "http://0.0.0.0:4443"
       run: |
         phpunit

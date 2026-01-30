@@ -1,6 +1,6 @@
 <?php
 
-class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
+class GS_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 
 	protected $temp_file_to_cleanup = null;
 
@@ -33,7 +33,7 @@ class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 			return parent::load();
 		}
 
-		$temp_filename                 = tempnam( get_temp_dir(), 's3-uploads' );
+		$temp_filename                 = tempnam( get_temp_dir(), 'gs-uploads' );
 		$this->temp_files_to_cleanup[] = $temp_filename;
 
 		copy( $this->file, $temp_filename );
@@ -47,9 +47,14 @@ class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 	}
 
 	/**
-	 * Imagick by default can't handle s3:// paths
+	 * Imagick by default can't handle gs:// paths
 	 * for saving images. We have instead save it to a file file,
-	 * then copy it to the s3:// path as a workaround.
+	 * then copy it to the gs:// path as a workaround.
+	 *
+	 * @param \Imagick $image an image
+	 * @param string   $filename a file name
+	 * @param string   $mime_type the mime type
+	 * @return array|\WP_Error
 	 */
 	protected function _save( $image, $filename = null, $mime_type = null ) {
 		list( $filename, $extension, $mime_type ) = $this->get_output_format( $filename, $mime_type );
@@ -61,7 +66,7 @@ class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 		$upload_dir = wp_upload_dir();
 
 		if ( strpos( $filename, $upload_dir['basedir'] ) === 0 ) {
-			$temp_filename = tempnam( get_temp_dir(), 's3-uploads' );
+			$temp_filename = tempnam( get_temp_dir(), 'gs-uploads' );
 		}
 
 		$save = parent::_save( $image, $temp_filename, $mime_type );
@@ -77,7 +82,7 @@ class S3_Uploads_Image_Editor_Imagick extends WP_Image_Editor_Imagick {
 		unlink( $temp_filename );
 
 		if ( ! $copy_result ) {
-			return new WP_Error( 'unable-to-copy-to-s3', 'Unable to copy the temp image to S3' );
+			return new WP_Error( 'unable-to-copy-to-gs', 'Unable to copy the temp image to Google Cloud Storage' );
 		}
 
 		return array(

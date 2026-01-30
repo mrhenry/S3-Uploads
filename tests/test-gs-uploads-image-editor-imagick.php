@@ -1,6 +1,6 @@
 <?php
 
-class Test_S3_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
+class Test_GS_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 	private $image_path = __DIR__ . '/data/canola.jpg';
 
 	protected function setUp(): void {
@@ -12,7 +12,7 @@ class Test_S3_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_s3_upload_image_editor_is_present() {
+	public function test_gs_upload_image_editor_is_present() {
 		$editors = apply_filters( 'wp_image_editors', array( 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ) );
 
 		$this->assertFalse( in_array( 'WP_Image_Editor_Imagick', $editors, true ), 'Imagick editor should be removed from the image editors array.' );
@@ -20,7 +20,7 @@ class Test_S3_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 
 	/**
 	 * It's expected that we can't save image uses imagick built in, as
-	 * the undlaying system library can't write to the "s3://" filesystem.
+	 * the undlaying system library can't write to the "gs://" filesystem.
 	 */
 	public function test_save_image_with_inbuilt_fails() {
 
@@ -42,7 +42,7 @@ class Test_S3_Uploads_Image_Editor_Imagick extends WP_UnitTestCase {
 		$path       = $upload_dir['basedir'] . '/canola.jpg';
 		copy( $this->image_path, $path );
 
-		$image_editor = new S3_Uploads_Image_Editor_Imagick( $path );
+		$image_editor = new GS_Uploads_Image_Editor_Imagick( $path );
 
 		$image_editor->load();
 		$image_editor->resize( 100, 100, true );

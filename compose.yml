@@ -12,7 +12,6 @@ services:
       - 3306:3306
 
   gcs:
-    image: fsouza/fake-gcs-server
-    entrypoint: /bin/fake-gcs-server
+    image: ghcr.io/mrhenry/fake-gcs-server
     ports:
       - 4443:4443

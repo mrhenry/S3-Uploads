@@ -15,14 +15,13 @@
 	<filter>
 		<whitelist>
 			<directory suffix=".php">./inc</directory>
-			<file>./s3-uploads.php</file>
+			<file>./gs-uploads.php</file>
 			<exclude>
 				<directory suffix=".php">./lib</directory>
-				<file>./inc/class-s3-uploads-wp-cli-command.php</file>
 			</exclude>
 		</whitelist>
 	</filter>
 	<php>
-		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="/tmp/php-unit-polyfills/"/>
+		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="./wp-test-root/php-unit-polyfills/"/>
 	</php>
 </phpunit>
