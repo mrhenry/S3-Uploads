@@ -3,7 +3,7 @@
         'name' => 'mrhenry/s3-uploads',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7a1322dd12becf6f2ae2fc19b6e556b18dcbbde1',
+        'reference' => '9d04246571c3d9c390a918948267868f81a0fdc4',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -175,7 +175,7 @@
         'mrhenry/s3-uploads' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7a1322dd12becf6f2ae2fc19b6e556b18dcbbde1',
+            'reference' => '9d04246571c3d9c390a918948267868f81a0fdc4',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
