@@ -1,0 +1,29 @@
+root = true
+
+[*]
+indent_style = tab
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 9999999
+
+[*.json]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[.vscode/settings.json]
+indent_style = tab
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.yaml]
+indent_style = space
+indent_size = 2
+
+[*.yml]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

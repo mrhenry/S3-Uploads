@@ -1,4 +1,5 @@
 .DS_Store
 .idea/
 *.phar
-vendor
+wp-test-root
+.phpunit.result.cache
